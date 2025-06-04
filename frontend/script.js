@@ -6,7 +6,7 @@ async function sendMessage() {
     const chatBox = document.getElementById("chat-box");
     chatBox.innerHTML += `<div><strong>You:</strong> ${message}</div>`;
 
-    const response = await fetch("https://YOUR_RENDER_URL/chat", {
+    const response = await fetch("https://java-chatbot-full-production.up.railway.app/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(message)
