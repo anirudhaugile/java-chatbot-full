@@ -7,9 +7,10 @@ async function sendMessage() {
     const message = input.value.trim();
     if (!message) return;
 
-    appendUserMessage(message);
+    appendUserBubble(message);
     input.value = "";
 
+    showTyping();
     let botResponse = "";
 
     switch (stage) {
@@ -38,7 +39,8 @@ async function sendMessage() {
                 });
                 stage = "count-intro";
             } else {
-                botResponse = "Please enter 3 remainders separated by spaces.";
+                removeTyping();
+                return appendBotBubble("Please enter 3 remainders separated by spaces.");
             }
             break;
 
@@ -60,7 +62,8 @@ async function sendMessage() {
         case "test":
             botResponse = await postJSON("/test", { answer: message });
             if (botResponse !== "Correct!") {
-                return appendBotMessage(botResponse);
+                removeTyping();
+                return appendBotBubble(botResponse);
             }
             stage = "end";
             break;
@@ -74,25 +77,41 @@ async function sendMessage() {
             botResponse = "You've completed the session!";
     }
 
-    appendBotMessage(botResponse);
+    removeTyping();
+    appendBotBubble(botResponse);
 }
 
-function appendUserMessage(msg) {
-    chatBox.innerHTML += `<div><strong>You:</strong> ${msg}</div>`;
+function appendUserBubble(message) {
+    const bubble = document.createElement("div");
+    bubble.className = "bubble user";
+    bubble.innerHTML = `<strong>You:</strong> ${message}`;
+    chatBox.appendChild(bubble);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function appendBotMessage(msg) {
-    if (Array.isArray(msg)) {
-        msg.forEach(line => {
-            chatBox.innerHTML += `<div><strong>Bot:</strong> ${line}</div>`;
-        });
-    } else {
-        msg.split("\n").forEach(line => {
-            chatBox.innerHTML += `<div><strong>Bot:</strong> ${line}</div>`;
-        });
-    }
+function appendBotBubble(message) {
+    const bubble = document.createElement("div");
+    bubble.className = "bubble bot";
+    message.split("\n").forEach((line) => {
+        const p = document.createElement("p");
+        p.textContent = line;
+        bubble.appendChild(p);
+    });
+    chatBox.appendChild(bubble);
     chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function showTyping() {
+    const typing = document.createElement("div");
+    typing.className = "bubble bot typing";
+    typing.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
+    chatBox.appendChild(typing);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function removeTyping() {
+    const typing = document.querySelector(".typing");
+    if (typing) typing.remove();
 }
 
 async function fetchText(path) {
@@ -108,8 +127,15 @@ async function postJSON(path, data) {
     });
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
-        return res.json();
+        const result = await res.json();
+        return typeof result === "string" ? result : JSON.stringify(result);
     } else {
         return res.text();
     }
 }
+
+input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
