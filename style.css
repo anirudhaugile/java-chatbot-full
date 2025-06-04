@@ -2,15 +2,16 @@
 body {
     margin: 0;
     padding: 0;
-    background: url('https://i.ibb.co/F71xkhK/robot-bg.png') center center no-repeat;
-    background-size: cover;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: white;
+    background: url('https://images.pexels.com/photos/8294651/pexels-photo-8294651.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260') no-repeat center center fixed;
+    background-size: cover;
+    backdrop-filter: blur(5px);
     height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 }
+
 
 /* Chat container */
 #chat-container {
