@@ -20,6 +20,11 @@ async function sendMessage() {
 
         case "remind-name":
             botResponse = await postJSON("/remind-name", { name: message });
+            stage = "guess-age-intro";
+            break;
+
+        case "guess-age-intro":
+            botResponse = "Let me guess your age.\nEnter remainders of dividing your age by 3, 5 and 7 (e.g., '2 3 1'):";
             stage = "guess-age";
             break;
 
@@ -31,20 +36,32 @@ async function sendMessage() {
                     rem5: remainders[1],
                     rem7: remainders[2]
                 });
-                stage = "count";
+                stage = "count-intro";
             } else {
                 botResponse = "Please enter 3 remainders separated by spaces.";
             }
             break;
 
+        case "count-intro":
+            botResponse = "Now I will prove to you that I can count to any number you want. Please type in a number:";
+            stage = "count";
+            break;
+
         case "count":
             botResponse = await postJSON("/count", { num: parseInt(message) });
+            stage = "test-intro";
+            break;
+
+        case "test-intro":
+            botResponse = "Let's test your programming knowledge.\nWhy do we use 'sout' in IntelliJ IDEA?\n1. To highlight the code\n2. Use it as a shortcut to type in the Print command\n3. To make code more readable\n4. To save a file";
             stage = "test";
             break;
 
         case "test":
             botResponse = await postJSON("/test", { answer: message });
-            if (botResponse !== "Correct!") return appendBotMessage(botResponse);
+            if (botResponse !== "Correct!") {
+                return appendBotMessage(botResponse);
+            }
             stage = "end";
             break;
 
@@ -71,7 +88,9 @@ function appendBotMessage(msg) {
             chatBox.innerHTML += `<div><strong>Bot:</strong> ${line}</div>`;
         });
     } else {
-        chatBox.innerHTML += `<div><strong>Bot:</strong> ${msg}</div>`;
+        msg.split("\n").forEach(line => {
+            chatBox.innerHTML += `<div><strong>Bot:</strong> ${line}</div>`;
+        });
     }
     chatBox.scrollTop = chatBox.scrollHeight;
 }
