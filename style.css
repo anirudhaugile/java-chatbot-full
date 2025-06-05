@@ -36,9 +36,9 @@ h1 {
 
 .user-message {
   background-color: #59788E;
-  color: white;
+  color: black;
   align-self: flex-end;
-  padding: 10px;
+  padding: 10px 16px;
   margin: 6px;
   border-radius: 12px;
   max-width: 80%;
@@ -47,9 +47,9 @@ h1 {
 
 .bot-message {
   background-color: #151E3D;
-  color: white;
+  color: black;
   align-self: flex-start;
-  padding: 10px;
+  padding: 10px 16px;
   margin: 6px;
   border-radius: 12px;
   max-width: 80%;
