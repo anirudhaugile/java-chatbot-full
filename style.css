@@ -1,5 +1,5 @@
 body {
-  background-color: #2C3E4c;
+  background-color: #081d33;
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
@@ -16,10 +16,10 @@ h1 {
 
 .chat-container {
   background-color: white;
-  width: 400px;
-  height: 600px;
+  width: 500px;
+  height: 800px;
   border-radius: 16px;
-  border: 2px solid black;
+  border: 10px solid black;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -47,7 +47,7 @@ h1 {
 
 .bot-message {
   background-color: #151E3D;
-  color: black;
+  color: white;
   align-self: flex-start;
   padding: 10px;
   margin: 6px;
