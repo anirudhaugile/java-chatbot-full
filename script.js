@@ -10,8 +10,6 @@ async function sendMessage() {
     appendUserMessage(message);
     input.value = "";
 
-    showTyping();
-
     let botResponse = "";
 
     switch (stage) {
@@ -76,50 +74,37 @@ async function sendMessage() {
             botResponse = "You've completed the session!";
     }
 
-    hideTyping();
     appendBotMessage(botResponse);
 }
 
 function appendUserMessage(msg) {
     const bubble = document.createElement("div");
-    bubble.className = "message user-message";
-    bubble.textContent = msg;
+    bubble.className = "user-msg";
+    bubble.innerText = msg;
     chatBox.appendChild(bubble);
-    scrollToBottom();
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function appendBotMessage(msg) {
-    if (Array.isArray(msg)) {
-        msg.forEach(line => createBotBubble(line));
-    } else {
-        msg.split("\n").forEach(line => createBotBubble(line));
-    }
-    scrollToBottom();
-}
-
-function createBotBubble(text) {
-    const bubble = document.createElement("div");
-    bubble.className = "message bot-message";
-    bubble.textContent = text;
-    chatBox.appendChild(bubble);
-}
-
-function showTyping() {
-    const typing = document.createElement("div");
-    typing.className = "message bot-message typing-indicator";
-    typing.id = "typing";
-    typing.innerHTML = "<span></span><span></span><span></span>";
-    chatBox.appendChild(typing);
-    scrollToBottom();
-}
-
-function hideTyping() {
-    const typing = document.getElementById("typing");
-    if (typing) typing.remove();
-}
-
-function scrollToBottom() {
+    const typingIndicator = document.createElement("div");
+    typingIndicator.className = "typing";
+    typingIndicator.innerText = "Bot is typing...";
+    chatBox.appendChild(typingIndicator);
     chatBox.scrollTop = chatBox.scrollHeight;
+
+    setTimeout(() => {
+        chatBox.removeChild(typingIndicator);
+
+        const lines = Array.isArray(msg) ? msg : msg.split("\n");
+        lines.forEach(line => {
+            const bubble = document.createElement("div");
+            bubble.className = "bot-msg";
+            bubble.innerText = line;
+            chatBox.appendChild(bubble);
+        });
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 500);
 }
 
 async function fetchText(path) {
