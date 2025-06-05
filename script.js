@@ -7,10 +7,11 @@ async function sendMessage() {
     const message = input.value.trim();
     if (!message) return;
 
-    appendUserBubble(message);
+    appendUserMessage(message);
     input.value = "";
 
-    showTyping();
+    showTypingIndicator();
+
     let botResponse = "";
 
     switch (stage) {
@@ -39,8 +40,7 @@ async function sendMessage() {
                 });
                 stage = "count-intro";
             } else {
-                removeTyping();
-                return appendBotBubble("Please enter 3 remainders separated by spaces.");
+                botResponse = "Please enter 3 remainders separated by spaces.";
             }
             break;
 
@@ -62,8 +62,8 @@ async function sendMessage() {
         case "test":
             botResponse = await postJSON("/test", { answer: message });
             if (botResponse !== "Correct!") {
-                removeTyping();
-                return appendBotBubble(botResponse);
+                removeTypingIndicator();
+                return appendBotMessage(botResponse);
             }
             stage = "end";
             break;
@@ -77,41 +77,52 @@ async function sendMessage() {
             botResponse = "You've completed the session!";
     }
 
-    removeTyping();
-    appendBotBubble(botResponse);
+    removeTypingIndicator();
+    appendBotMessage(botResponse);
 }
 
-function appendUserBubble(message) {
-    const bubble = document.createElement("div");
-    bubble.className = "bubble user";
-    bubble.innerHTML = `<strong>You:</strong> ${message}`;
-    chatBox.appendChild(bubble);
+function appendUserMessage(msg) {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "message-bubble user-message fade-in";
+    msgDiv.textContent = msg;
+    chatBox.appendChild(msgDiv);
+    scrollToBottom();
+}
+
+function appendBotMessage(msg) {
+    if (Array.isArray(msg)) {
+        msg.forEach(line => {
+            appendBotMessage(line);
+        });
+    } else {
+        msg.split("\n").forEach(line => {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "message-bubble bot-message fade-in";
+            msgDiv.textContent = line;
+            chatBox.appendChild(msgDiv);
+        });
+    }
+    scrollToBottom();
+}
+
+function showTypingIndicator() {
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "typing-indicator";
+    typingDiv.id = "typing";
+    typingDiv.textContent = "Bot is typing...";
+    chatBox.appendChild(typingDiv);
+    scrollToBottom();
+}
+
+function removeTypingIndicator() {
+    const typingDiv = document.getElementById("typing");
+    if (typingDiv) {
+        typingDiv.remove();
+    }
+}
+
+function scrollToBottom() {
     chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function appendBotBubble(message) {
-    const bubble = document.createElement("div");
-    bubble.className = "bubble bot";
-    message.split("\n").forEach((line) => {
-        const p = document.createElement("p");
-        p.textContent = line;
-        bubble.appendChild(p);
-    });
-    chatBox.appendChild(bubble);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function showTyping() {
-    const typing = document.createElement("div");
-    typing.className = "bubble bot typing";
-    typing.innerHTML = `<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
-    chatBox.appendChild(typing);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function removeTyping() {
-    const typing = document.querySelector(".typing");
-    if (typing) typing.remove();
 }
 
 async function fetchText(path) {
@@ -127,15 +138,8 @@ async function postJSON(path, data) {
     });
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
-        const result = await res.json();
-        return typeof result === "string" ? result : JSON.stringify(result);
+        return res.json();
     } else {
         return res.text();
     }
 }
-
-input.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-        sendMessage();
-    }
-});
