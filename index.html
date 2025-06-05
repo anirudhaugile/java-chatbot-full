@@ -1,19 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simple Chat Bot</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Chat Bot</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div id="chat-container">
-    <div id="chat-box"></div>
-    <div id="input-area">
-      <input type="text" id="user-input" placeholder="Type your message..." onkeydown="if (event.key === 'Enter') sendMessage()" />
-      <button onclick="sendMessage()">Send</button>
+
+    <h1>Simple Chat Bot</h1>
+
+    <div class="container">
+        <div id="chat-box"></div>
+
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
     </div>
-  </div>
-  <script src="script.js"></script>
+
+    <footer>
+        created by: Anirudha Sunil Ugile <br />
+        Languages used: Java, HTML, CSS <br />
+        website assistance: Railway, GitHub, and ChatGPT
+    </footer>
+
+    <script src="script.js"></script>
 </body>
+
 </html>
