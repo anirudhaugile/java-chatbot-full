@@ -1,7 +1,13 @@
 const chatBox = document.getElementById("chat-box");
 const input = document.getElementById("user-input");
+const sendBtn = document.getElementById("send-btn");
 
 let stage = "greet";
+
+sendBtn.addEventListener("click", sendMessage);
+input.addEventListener("keypress", function (e) {
+  if (e.key === "Enter") sendMessage();
+});
 
 async function sendMessage() {
   const message = input.value.trim();
@@ -9,8 +15,6 @@ async function sendMessage() {
 
   appendUserMessage(message);
   input.value = "";
-
-  showTyping();
 
   let botResponse = "";
 
@@ -62,8 +66,8 @@ async function sendMessage() {
     case "test":
       botResponse = await postJSON("/test", { answer: message });
       if (botResponse !== "Correct!") {
-        hideTyping();
-        return appendBotMessage(botResponse);
+        appendBotMessage(botResponse);
+        return;
       }
       stage = "end";
       break;
@@ -77,50 +81,27 @@ async function sendMessage() {
       botResponse = "You've completed the session!";
   }
 
-  hideTyping();
   appendBotMessage(botResponse);
 }
 
 function appendUserMessage(msg) {
   const div = document.createElement("div");
-  div.className = "message user-message";
+  div.className = "user-message";
   div.textContent = msg;
   chatBox.appendChild(div);
-  scrollChatToBottom();
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function appendBotMessage(msg) {
-  const lines = Array.isArray(msg) ? msg : msg.split("\n");
-  lines.forEach(line => {
-    const div = document.createElement("div");
-    div.className = "message bot-message";
-    div.textContent = line;
-    chatBox.appendChild(div);
+  const div = document.createElement("div");
+  div.className = "bot-message";
+  msg.split("\n").forEach(line => {
+    const lineDiv = document.createElement("div");
+    lineDiv.textContent = line;
+    div.appendChild(lineDiv);
   });
-  scrollChatToBottom();
-}
-
-function scrollChatToBottom() {
-  chatBox.scrollTo({
-    top: chatBox.scrollHeight,
-    behavior: "smooth"
-  });
-}
-
-function showTyping() {
-  const typingDiv = document.createElement("div");
-  typingDiv.id = "typing";
-  typingDiv.className = "message bot-message typing";
-  typingDiv.textContent = "Bot is typing...";
-  chatBox.appendChild(typingDiv);
-  scrollChatToBottom();
-}
-
-function hideTyping() {
-  const typingDiv = document.getElementById("typing");
-  if (typingDiv) {
-    chatBox.removeChild(typingDiv);
-  }
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 async function fetchText(path) {
@@ -134,12 +115,6 @@ async function postJSON(path, data) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   });
-
   const contentType = res.headers.get("content-type");
-  if (contentType && contentType.includes("application/json")) {
-    const result = await res.json();
-    return typeof result === "string" ? result : JSON.stringify(result);
-  } else {
-    return res.text();
-  }
+  return contentType && contentType.includes("application/json") ? res.json() : res.text();
 }
