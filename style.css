@@ -11,55 +11,61 @@ body {
 
 .container {
     background-color: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
     width: 90%;
     max-width: 600px;
-    height: 80vh;
+    height: 85vh;
     display: flex;
     flex-direction: column;
     padding: 20px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 h1 {
     text-align: center;
     color: #151E3D;
     font-size: 28px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 #chat-box {
-    background-color: #f0f2f5;
-    border-radius: 15px;
+    background-color: #f2f2f2;
+    border-radius: 20px;
     flex-grow: 1;
     padding: 15px;
     overflow-y: auto;
     margin-bottom: 15px;
-    color: #151E3D;
-    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .user-message, .bot-message {
-    margin-bottom: 10px;
-    padding: 10px 15px;
-    border-radius: 20px;
     max-width: 75%;
+    padding: 12px 18px;
+    border-radius: 20px;
+    font-size: 15px;
     word-wrap: break-word;
     animation: fadeIn 0.3s ease-in;
+    display: inline-block;
 }
 
 .user-message {
     background-color: #59788E;
     color: #ffffff;
     align-self: flex-end;
-    text-align: right;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 20px;
 }
 
 .bot-message {
     background-color: #151E3D;
     color: #ffffff;
     align-self: flex-start;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 20px;
 }
 
 .input-area {
