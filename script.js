@@ -10,7 +10,7 @@ async function sendMessage() {
     appendUserMessage(message);
     input.value = "";
 
-    showTypingIndicator();
+    showTyping();
 
     let botResponse = "";
 
@@ -62,7 +62,6 @@ async function sendMessage() {
         case "test":
             botResponse = await postJSON("/test", { answer: message });
             if (botResponse !== "Correct!") {
-                removeTypingIndicator();
                 return appendBotMessage(botResponse);
             }
             stage = "end";
@@ -77,48 +76,46 @@ async function sendMessage() {
             botResponse = "You've completed the session!";
     }
 
-    removeTypingIndicator();
+    hideTyping();
     appendBotMessage(botResponse);
 }
 
 function appendUserMessage(msg) {
-    const msgDiv = document.createElement("div");
-    msgDiv.className = "message-bubble user-message fade-in";
-    msgDiv.textContent = msg;
-    chatBox.appendChild(msgDiv);
+    const bubble = document.createElement("div");
+    bubble.className = "message user-message";
+    bubble.textContent = msg;
+    chatBox.appendChild(bubble);
     scrollToBottom();
 }
 
 function appendBotMessage(msg) {
     if (Array.isArray(msg)) {
-        msg.forEach(line => {
-            appendBotMessage(line);
-        });
+        msg.forEach(line => createBotBubble(line));
     } else {
-        msg.split("\n").forEach(line => {
-            const msgDiv = document.createElement("div");
-            msgDiv.className = "message-bubble bot-message fade-in";
-            msgDiv.textContent = line;
-            chatBox.appendChild(msgDiv);
-        });
+        msg.split("\n").forEach(line => createBotBubble(line));
     }
     scrollToBottom();
 }
 
-function showTypingIndicator() {
-    const typingDiv = document.createElement("div");
-    typingDiv.className = "typing-indicator";
-    typingDiv.id = "typing";
-    typingDiv.textContent = "Bot is typing...";
-    chatBox.appendChild(typingDiv);
+function createBotBubble(text) {
+    const bubble = document.createElement("div");
+    bubble.className = "message bot-message";
+    bubble.textContent = text;
+    chatBox.appendChild(bubble);
+}
+
+function showTyping() {
+    const typing = document.createElement("div");
+    typing.className = "message bot-message typing-indicator";
+    typing.id = "typing";
+    typing.innerHTML = "<span></span><span></span><span></span>";
+    chatBox.appendChild(typing);
     scrollToBottom();
 }
 
-function removeTypingIndicator() {
-    const typingDiv = document.getElementById("typing");
-    if (typingDiv) {
-        typingDiv.remove();
-    }
+function hideTyping() {
+    const typing = document.getElementById("typing");
+    if (typing) typing.remove();
 }
 
 function scrollToBottom() {
